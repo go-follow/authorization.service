@@ -77,7 +77,7 @@ func (h *HTTP) logout(w http.ResponseWriter, r *http.Request) {
 func (h *HTTP) addUser(w http.ResponseWriter, r *http.Request) {
 	token, err := r.Cookie("token")
 	if err != nil {
-		server.SendErrorJSON(w, r, 400, fmt.Errorf("invalid authorization token"))
+		server.SendErrorJSON(w, r, 401, fmt.Errorf("invalid authorization token"))
 		return
 	}
 	role, err := h.svc.CheckAccess(token.Value)

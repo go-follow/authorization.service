@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/go-follow/authorization.service/config"
+	"github.com/go-follow/authorization.service/internal/apiserver"
 	"github.com/go-follow/authorization.service/pkg/logger"
 )
 
@@ -12,5 +11,5 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	fmt.Println(cfg)
+	apiserver.Start(cfg)
 }
