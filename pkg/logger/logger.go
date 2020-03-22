@@ -1,5 +1,11 @@
 package logger
 
+import (
+	"fmt"
+	"log"
+	"os"
+)
+
 const (
 	er    string = "\x1b[31;1mERROR: \x1b[0m"
 	fatal string = "\x1b[31;1mFATAL: \x1b[0m"

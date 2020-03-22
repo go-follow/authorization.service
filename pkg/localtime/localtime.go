@@ -1,6 +1,10 @@
 package localtime
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-follow/authorization.service/pkg/logger"
+)
 
 //Date - приведение time.Time к часовому поясу Asia/Krasnoyarsk
 func Date(d time.Time) time.Time {
