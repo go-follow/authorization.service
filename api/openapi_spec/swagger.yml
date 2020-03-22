@@ -1,0 +1,157 @@
+openapi: "3.0.0"
+info:
+  title: "Service for authorization and user authentication"
+  version: "0.0.1"
+servers:
+  - url: http://localhost:8999/api/v1
+    variables:
+      protocol:
+        enum:
+          - http
+        default: http
+    description: "the authorization service starts by default on port 8999. The port is changed through the environment"      
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+    basicAuth:
+      type: http
+      scheme: basic 
+  schemas:
+    NotValidToken:
+      description: "Invalid authorization token"
+      type: object
+      properties:
+        error:
+          type: string
+      example: {"error": "invalid authorization token"}
+      required: 
+        - error
+    UserForbidden:
+      description: "Prohibited with this user role"
+      type: object
+      properties:
+        error:
+          type: string
+      example: {"error": "a user with the current role is not allowed to perform this operation"}
+      required:
+        - error
+paths:
+  /ping:
+    get:
+      summary: "Checking service rest health"   
+      responses:
+        200:
+          description: "OK"
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    example: "pong"
+                required: 
+                  - success
+  /check_access:
+    get:
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_role:
+                    type: string
+                example: {"user_role": "editor"}
+                required: 
+                  - user_role
+        401:
+          description: "Invalid authorization token"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotValidToken"
+  /login:
+    get:
+      security:
+        - basicAuth: []
+      description: "User Authentication. Login using username and password."
+      responses:
+        200:
+          description: "OK"
+        401:
+          description: "The username or password you entered is incorrect"
+          content:
+            application/json:
+              schema:
+                description: "Incorrect username or password"
+                type: object
+                properties:
+                  error:
+                    type: string
+                example: {"error": "the username or password you entered is incorrect"}
+                required: 
+                  - error
+  /logout:
+    get:
+      description: "Logout user and delete cookie."
+      responses:
+        200:
+          description: "OK"
+  /add_user:
+    post:
+      security:
+        - cookieAuth: []
+      summary: "Adding a user. Possible only by user with the role - admin"
+      requestBody:
+        description: "Parameters for adding a user"
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - user_name
+                - password
+                - role
+              properties:
+                user_name:
+                  type: string
+                  maxLength: 30
+                  description: "Username"
+                password:
+                  type: string
+                  minLength: 6
+                  description: "User password"
+                role:
+                  type: string
+                  maxLength: 30
+                  enum:
+                    - admin
+                    - editor
+                    - viewer
+                  description: "User role"
+                enable:
+                  type: boolean
+                  description: "enabled / disabled user. False by default"
+      responses:
+        200:
+          description: "OK"
+        401:
+          description: "Invalid authorization token"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotValidToken"
+        403:
+          description: "Not enough rights"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserForbidden"                                   
