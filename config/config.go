@@ -1,13 +1,19 @@
-package localtime
+package config
 
-import "time"
+//Config - конфигурационные настройки для всего проекта
+type Config struct {
+	Server *Server
+	Db     *Db
+}
 
-//Date - приведение time.Time к часовому поясу Asia/Krasnoyarsk
-func Date(d time.Time) time.Time {
-	timeZone := "Asia/Krasnoyarsk"
-	loc, err := time.LoadLocation(timeZone)
-	if err != nil {
-		logger.Fatalf("unable to set time zone: %s:%v", timeZone, err)
-	}
-	return d.UTC().In(loc)
+//Server - настройки для запуска рест сервера
+type Server struct {
+	Port   uint16
+	Secret string
+}
+
+//Db - настройки к подключению Db
+type Db struct {
+	Driver           string
+	ConnectionString string
 }
