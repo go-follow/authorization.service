@@ -35,12 +35,12 @@ func NewHTTP(svc service.Service, r chi.Router) {
 func (h *HTTP) checkAccess(w http.ResponseWriter, r *http.Request) {
 	token, err := r.Cookie("token")
 	if err != nil {
-		server.SendErrorJSON(w, r, 401, fmt.Errorf("токен авторизации не действителен"))
+		server.SendErrorJSON(w, r, 401, fmt.Errorf("invalid authorization token"))
 		return
 	}
 	role, err := h.svc.CheckAccess(token.Value)
 	if err != nil {
-		server.SendErrorJSON(w, r, 401, fmt.Errorf("токен авторизации не действителен"))
+		server.SendErrorJSON(w, r, 401, fmt.Errorf("invalid authorization token"))
 		return
 	}
 	render.JSON(w, r, map[string]string{"user_role": role})
@@ -77,16 +77,16 @@ func (h *HTTP) logout(w http.ResponseWriter, r *http.Request) {
 func (h *HTTP) addUser(w http.ResponseWriter, r *http.Request) {
 	token, err := r.Cookie("token")
 	if err != nil {
-		server.SendErrorJSON(w, r, 400, fmt.Errorf("токен авторизации не действителен"))
+		server.SendErrorJSON(w, r, 400, fmt.Errorf("invalid authorization token"))
 		return
 	}
 	role, err := h.svc.CheckAccess(token.Value)
 	if err != nil {
-		server.SendErrorJSON(w, r, 401, fmt.Errorf("токен авторизации не действителен"))
+		server.SendErrorJSON(w, r, 401, fmt.Errorf("invalid authorization token"))
 		return
 	}
 	if role != "admin" {
-		server.SendErrorJSON(w, r, 403, fmt.Errorf("недостаточно прав для выполнения запроса"))
+		server.SendErrorJSON(w, r, 403, fmt.Errorf("a user with the current role is not allowed to perform this operation"))
 		return
 	}
 	enable, err := strconv.ParseBool(r.FormValue("enable"))

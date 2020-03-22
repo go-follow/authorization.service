@@ -55,7 +55,7 @@ func (a *App) Login(name, pass string) (int, string, error) {
 		return 500, "", err
 	}
 	if u == nil || !u.Enable || !u.ComparePassword(a.cfg.Server.Secret) {
-		return 401, "", fmt.Errorf("неверное имя пользователя или пароль")
+		return 401, "", fmt.Errorf("the username or password you entered is incorrect")
 	}
 
 	token, err := jwttoken.Create(name, u.Role, a.cfg.Server.Secret)

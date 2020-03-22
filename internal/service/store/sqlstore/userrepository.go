@@ -50,7 +50,7 @@ func (r *UserRepository) Insert(u *model.User) (int32, error) {
 		return -1, err
 	}
 	if f != nil {
-		return -1, fmt.Errorf("Имя пользователя %s уже используется", u.Name)
+		return -1, fmt.Errorf("username %s already in use", u.Name)
 	}
 	var id int32
 	err = r.store.db.QueryRow(`INSERT INTO public.user (name, password_hash, enable, role, date_create)
