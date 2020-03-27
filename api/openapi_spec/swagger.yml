@@ -3,13 +3,13 @@ info:
   title: "Service for authorization and user authentication"
   version: "0.0.1"
 servers:
-  - url: http://localhost:8999/api/v1
+  - url: http://localhost:17333/api/v1
     variables:
       protocol:
         enum:
           - http
         default: http
-    description: "the authorization service starts by default on port 8999. The port is changed through the environment"      
+    description: "the authorization service starts by default on port 17333. The port is changed through the environment"      
 components:
   securitySchemes:
     cookieAuth:

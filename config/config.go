@@ -16,7 +16,7 @@ type Config struct {
 //Server - настройки для запуска рест сервера
 type Server struct {
 	Port   uint16
-	Secret string	
+	Secret string
 }
 
 //Db - настройки к подключению Db
@@ -58,22 +58,28 @@ func dbConfig() (*Db, error) {
 }
 
 func serverConfig() (*Server, error) {
-	portS := strings.TrimSpace(os.Getenv("SERVER_PORT"))
-	if portS == "" {
-		return nil, fmt.Errorf("empty env SERVER_PORT")
-	}
-
-	p, err := strconv.ParseUint(portS, 10, 16)
+	port, err := portConfig()
 	if err != nil {
-		return nil, fmt.Errorf("env SERVER_PORT should be integer and have range from 0 to  65535: %v", err)
+		return nil, err
 	}
-
 	secret := strings.TrimSpace(os.Getenv("SERVER_SECRET"))
 	if secret == "" {
 		return nil, fmt.Errorf("empty env SERVER_SECRET")
 	}
 	return &Server{
-		Port:   uint16(p),
+		Port:   port,
 		Secret: secret,
 	}, nil
+}
+
+func portConfig() (uint16, error) {
+	portS := strings.TrimSpace(os.Getenv("SERVER_PORT"))
+	if portS == "" {
+		return 17333, nil
+	}
+	p, err := strconv.ParseUint(portS, 10, 16)
+	if err != nil {
+		return 0, fmt.Errorf("env SERVER_PORT should be integer and have range from 0 to  65535: %v", err)
+	}
+	return uint16(p), nil
 }
